@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
- 
+use Illuminate\Database\Eloquent\Builder;
+
 class PersonalMedico extends Model
 {
     use HasFactory;
@@ -23,6 +24,19 @@ class PersonalMedico extends Model
     'Medicina general', 'Obstetricia', 'Enfermería',
     'Odontología', 'Pediatría',
 ];
+
+    public function scopeActivos(Builder $consulta): void
+{
+    $consulta->where('activo', true);
+}
+ 
+public function scopeDeEspecialidad(Builder $consulta,
+                                    ?string $especialidad): void
+{
+    if ($especialidad) {
+        $consulta->where('especialidad', $especialidad);
+    }
+}
 
  
     protected function casts(): array
