@@ -75,6 +75,27 @@ private function cuentasDisponibles(?PersonalMedico $medico = null)
         ->get();
 }
 
+    public function cambiarEstado(PersonalMedico $personalMedico)
+{
+    $personalMedico->update(['activo' => ! $personalMedico->activo]);
+ 
+    if ($personalMedico->activo) {
+        return back()->with('ok', 'Profesional activado.');
+    }
+ 
+    $pendientes = $personalMedico->citas()
+        ->where('fecha_hora', '>=', now())
+        ->whereIn('estado', ['pendiente', 'confirmada'])
+        ->count();
+ 
+    $aviso = 'Profesional desactivado: ya no recibirá nuevas citas (RN04).';
+    if ($pendientes > 0) {
+        $aviso .= " Tiene $pendientes citas próximas por reprogramar.";
+    }
+ 
+    return back()->with('ok', $aviso);
+}
+
 
     /**
      * Display the specified resource.
